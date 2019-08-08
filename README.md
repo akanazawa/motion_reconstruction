@@ -24,7 +24,7 @@ See the README in the tar file for more details.
 
 ## Requirements
 - [TensorFlow](https://www.tensorflow.org/) 
-- SMPL
+- [SMPL](http://smpl.is.tue.mpg.de/)
 - Have the same `models/` structure as in [HMR](https://github.com/akanazawa/hmr/) (you need the trained models and `neutral_smpl_with_cocoplus_reg.pkl`)
 
 ## Rotation augmented models
@@ -48,6 +48,9 @@ releases. It's also slightly dated.
 I'm putting this out there in case this is useful for others. You may need to fix some quirks.
 
 Pull requests/contributions welcome!
+
+### License
+This particular repo is under BSD but please follow the license agreement for tools that I build on such as [SMPL](http://smpl.is.tue.mpg.de/license_model) and [OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/LICENSE).
 
 
 #### June 28 2019.  
