@@ -27,6 +27,11 @@ See the README in the tar file for more details.
 - SMPL
 - Have the same `models/` structure as in [HMR](https://github.com/akanazawa/hmr/) (you need the trained models and `neutral_smpl_with_cocoplus_reg.pkl`)
 
+## Rotation augmented models
+This repo uses fine-tuned models for OpenPose and HMR with rotation
+augmentation.
+The models used can be found here:
+[ft-OpenPose](https://drive.google.com/file/d/1lSLrZDLGY93zOw3i2V-KuhhASC9YG7ez/view?usp=sharing), [ft-HMR](https://drive.google.com/file/d/1vnAZgwS6DrEC9RNB-KsZzbPvIwJex5b2/view?usp=sharing)
 
 ## Steps to run:
 1. `python -m run_openpose`

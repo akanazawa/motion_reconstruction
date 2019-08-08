@@ -23,7 +23,7 @@ kVidDir = '/home/kanazawa/projects/hmr_sfv/demo_data/videos'
 kOutDir = '/home/kanazawa/projects/hmr_sfv/demo_data/openpose_output'
 
 kOpenPose = '/scratch1/storage/git_repos/openpose'
-kOpenPoseModel = '/scratch1/storage/git_repos/openpose/models/'
+kOpenPoseModel = '/scratch1/storage/git_repos/Realtime_Multi-Person_Pose_Estimation/aj_finetuned_models_170k/'
 
 tf.app.flags.DEFINE_string('video_dir', kVidDir, 'dir of vids')
 tf.app.flags.DEFINE_string('out_dir', kOutDir, 'dir of output')
@@ -35,12 +35,9 @@ VIS_THR = 0.1
 # KP is only accecptable if this many points are visible
 NUM_VIS_THR = 5
 # After smoothing, cut back until final conf is above this.
-END_BOX_CONF = 0.55
-END_BOX_CONF = 0.45
-# END_BOX_CONF = 0.25
 END_BOX_CONF = 0.1
 # Required IOU to be a match
-IOU_THR = 0.05### #0.65
+IOU_THR = 0.05
 # If person hasn't appeared for this many frames, drop it.
 OCCL_THR = 30
 # Bbox traj must be longer than 50% of duration (duration -> max length any body was seen)
@@ -48,16 +45,9 @@ FREQ_THR = .1 #.3
 # If median bbox area is less than this% of image area, kill it.
 SIZE_THR = .23
 # If avg score of the trajectory is < than this, kill it.
-# SCORE_THR = .60
-# SCORE_THR = .59
-# SCORE_THR = .49
 SCORE_THR = .4
-#SCORE_THR = .25
 # Nonmaxsupp overlap threshold
-if 'fouhey' in kVidDir:
-    NMS_THR = 0.8
-else:
-    NMS_THR = 0.5
+NMS_THR = 0.5
 
 BOX_SIZE = 224
 RADIUS = BOX_SIZE / 2.
@@ -349,7 +339,6 @@ def smooth_detections(persons):
         bbox_scores = bboxes_filled[:, 3]
         # Filter the first 3 parameters (cx, cy, s)
         smoothed = np.array([signal.medfilt(param, 11) for param in bbox_params.T]).T
-        # smoothed = np.array([signal.medfilt(param, 25) for param in bbox_params.T]).T
         from scipy.ndimage.filters import gaussian_filter1d
         smoothed2 = np.array([gaussian_filter1d(traj, 3) for traj in smoothed.T]).T
 
@@ -362,7 +351,6 @@ def smooth_detections(persons):
                 break
             last_ind -= 1
         # Make it into 8 dim (cx, cy, sc, score, x, y, h, w) again,,
-        # final_bboxes = np.hstack([smoothed2, bbox_scores.reshape(-1, 1), smoothed_bboxes])
         final_bboxes = np.hstack([smoothed2[:last_ind], bbox_scores.reshape(-1, 1)[:last_ind], smoothed_bboxes[:last_ind]])
         final_kps = kps_filled[:last_ind]
 

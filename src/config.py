@@ -28,7 +28,7 @@ SMPL_MODEL_PATH = osp.join(model_dir, 'neutral_smpl_with_cocoplus_reg.pkl')
 SMPL_FACE_PATH = osp.join(curr_path, 'tf_smpl', 'smpl_faces.npy')
 
 # Default pred-trained model path for the demo.
-PRETRAINED_MODEL = '/home/kanazawa/projects/hmr_sfv/models/Feb12_2100_save75_model.ckpt-667589'
+PRETRAINED_MODEL = osp.join(model_dir, 'hmr_rotaug_May03_1425/model.ckpt-1111959'
 # PRETRAINED_MODEL = osp.join(model_dir, 'model.ckpt-667589')
 
 flags.DEFINE_string('smpl_model_path', SMPL_MODEL_PATH,
