@@ -15,15 +15,15 @@ import matplotlib.patches as patches
 import scipy.signal as signal
 import deepdish as dd
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 from src.util.renderer import draw_openpose_skeleton
 
-kVidDir = '/home/kanazawa/projects/hmr_sfv/demo_data/videos'
-kOutDir = '/home/kanazawa/projects/hmr_sfv/demo_data/openpose_output'
+kVidDir = './demo_data/videos'
+kOutDir = './demo_data/openpose_output'
 
-kOpenPose = '/scratch1/storage/git_repos/openpose'
-kOpenPoseModel = '/scratch1/storage/git_repos/Realtime_Multi-Person_Pose_Estimation/aj_finetuned_models_170k/'
+kOpenPose = '~/sandbox/openpose'
+kOpenPoseModel = '~/sandbox/models/aj_finetuned_models_170k/'
 
 tf.app.flags.DEFINE_string('video_dir', kVidDir, 'dir of vids')
 tf.app.flags.DEFINE_string('out_dir', kOutDir, 'dir of output')
@@ -73,10 +73,11 @@ def main(unused_argv):
 
     vid_paths = sorted(glob(join(vid_dir, "*.mp4")))
 
-    # cmd_base = '%s/build/examples/openpose/openpose.bin --video %%s --write_keypoint_json %%s --no_display --render_pose 1' % (
+    # cmd_base = '%s/build/examples/openpose/openpose.bin --video %%s --write_json %%s --no_display --render_pose 1' % (
     #     openpose_dir)
     # Maximum accuracy configuration:
-    cmd_base = '%s/build/examples/openpose/openpose.bin --video %%s --write_keypoint_json %%s --net_resolution "1312x736" --scale_number 4 --scale_gap 0.25 --write_images %%s --write_images_format jpg' % (
+    #cmd_base = '%s/build/examples/openpose/openpose.bin --video %%s --write_json %%s --net_resolution "1312x736" --scale_number 4 --scale_gap 0.25 --write_images %%s --write_images_format jpg' % (
+    cmd_base = '%s/build/examples/openpose/openpose.bin --video %%s --write_json %%s --scale_gap 0.25 --write_images %%s --write_images_format jpg' % (
         openpose_dir)
 
     cmd_base += ' --model_folder %s' % FLAGS.op_model_dir    
@@ -172,7 +173,7 @@ def clean_detections(all_kps, vid_path, vis=False):
             end_frame = i
             # Find matching persons.
             iou_scores = []
-            for p_id, p_bboxes in persons.iteritems():
+            for p_id, p_bboxes in iter(persons.items()):
                 last_time, last_bbox, last_kp = p_bboxes[-1]
                 if (i - last_time) > OCCL_THR:
                     ious = -np.ones(len(bboxes))
@@ -235,6 +236,7 @@ def clean_detections(all_kps, vid_path, vis=False):
             plt.pause(1e-3)
 
     # Now clean these people!
+    persons_tbd = [];
     if not vis:
         frames = read_frames(vid_path, 1)
     img_area = frames[0].shape[0] * frames[0].shape[1]
@@ -248,7 +250,8 @@ def clean_detections(all_kps, vid_path, vis=False):
         # print('freq %.2f, score %.2f, size %.2f' % (freq, med_score, median_bbox_area))
         if freq < FREQ_THR:
             print('Rejecting %d bc too suprious: %.2f' % (p_id, freq))
-            del persons[p_id]
+            #del persons[p_id]
+            persons_tbd.append(p_id)
             continue
 
         # if (median_bbox_area) < SIZE_THR:
@@ -258,9 +261,12 @@ def clean_detections(all_kps, vid_path, vis=False):
         #     continue
         if med_score < SCORE_THR:
             print('Rejecting %d bc not confident: %.2f' % (p_id, med_score))
-            del persons[p_id]
+            #del persons[p_id]
+            persons_tbd.append(p_id)
             continue
         print('%d survived with: freq %.2f, score %.2f, size %.2f' % (p_id, freq, med_score, median_bbox_area))
+    for p_id_tbd in persons_tbd:
+        del persons[p_id_tbd]
     print('Total # of ppl trajectories: %d' % len(persons.keys()))
     if len(persons.keys()) == 0:
         return {}
@@ -462,7 +468,7 @@ def read_json(json_path):
         data = json.load(f)
     kps = []
     for people in data['people']:
-        kp = np.array(people['pose_keypoints']).reshape(-1, 3)
+        kp = np.array(people['pose_keypoints_2d']).reshape(-1, 3)
         kps.append(kp)
     return kps
 
@@ -499,10 +505,10 @@ def nonmaxsupp(bboxes0, valid_kps0):
         w = np.maximum(0, xx2 - xx1 + 1)
         h = np.maximum(0, yy2 - yy1 + 1)
         # compute the ratio of overlap
-	overlap = (w * h) / area[idxs[:last]]
+        overlap = (w * h) / area[idxs[:last]]
 
         # delete all indexes from the index list that have
-	idxs = np.delete(idxs, np.concatenate(([last],
+        idxs = np.delete(idxs, np.concatenate(([last],
 			                       np.where(overlap > NMS_THR)[0])))
 
     return bboxes0[pick], valid_kps0[pick]
