@@ -11,9 +11,9 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import cPickle as pickle
+import pickle
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from .batch_lbs import batch_rodrigues, batch_global_rigid_transformation
 
 
@@ -28,8 +28,8 @@ class SMPL(object):
         pkl_path is the path to a SMPL model
         """
         # -- Load SMPL params --
-        with open(pkl_path, 'r') as f:
-            dd = pickle.load(f)    
+        with open(pkl_path, 'rb') as f:
+            dd = pickle.load(f, encoding='iso-8859-1')    
         # Mean template vertices
         self.v_template = tf.Variable(
             undo_chumpy(dd['v_template']),
@@ -37,7 +37,7 @@ class SMPL(object):
             dtype=dtype,
             trainable=False)
         # Size of mesh [Number of vertices, 3]
-        self.size = [self.v_template.shape[0].value, 3]
+        self.size = [self.v_template.shape[0], 3]
         self.num_betas = dd['shapedirs'].shape[-1]
         # Shape blend shape basis: 6980 x 3 x 10
         # reshaped to 6980*30 x 10, transposed to 10x6980*3
@@ -103,7 +103,7 @@ class SMPL(object):
         """
 
         with tf.name_scope(name, "smpl_main", [beta, theta]):
-            num_batch = beta.shape[0].value
+            num_batch = beta.shape[0]
 
             # 1. Add shape blend shapes
             # (N x 10) x (10 x 6890*3) = N x 6890 x 3

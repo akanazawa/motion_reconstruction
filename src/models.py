@@ -12,10 +12,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
-import tensorflow.contrib.slim as slim
+import tensorflow.compat.v1 as tf
+import tf_slim as slim
 
-from tensorflow.contrib.layers.python.layers.initializers import variance_scaling_initializer
+from tf_slim.layers.initializers import variance_scaling_initializer
 
 
 def Encoder_resnet(x, is_training=True, weight_decay=0.001, reuse=False):
@@ -33,8 +33,8 @@ def Encoder_resnet(x, is_training=True, weight_decay=0.001, reuse=False):
     - Shape vector: N x 10
     - variables: tf variables
     """
-    from tensorflow.contrib.slim.python.slim.nets import resnet_v2
-    with tf.name_scope("Encoder_resnet", [x]):
+    from tf_slim.nets import resnet_v2
+    with tf.name_scope("Encoder_resnet", values=[x]):
         with slim.arg_scope(
                 resnet_v2.resnet_arg_scope(weight_decay=weight_decay)):
             net, end_points = resnet_v2.resnet_v2_50(
@@ -44,7 +44,7 @@ def Encoder_resnet(x, is_training=True, weight_decay=0.001, reuse=False):
                 reuse=reuse,
                 scope='resnet_v2_50')
             net = tf.squeeze(net, axis=[1, 2])
-    variables = tf.contrib.framework.get_variables('resnet_v2_50')
+    variables = tf.global_variables('resnet_v2_50')
     return net, variables
 
 
@@ -84,7 +84,7 @@ def Encoder_fc3_dropout(x,
             weights_initializer=small_xavier,
             scope='fc3')
 
-    variables = tf.contrib.framework.get_variables(scope)
+    variables = tf.global_variables(scope.name)
     return net, variables
 
 

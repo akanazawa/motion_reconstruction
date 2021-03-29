@@ -25,7 +25,7 @@ from glob import glob
 import deepdish as dd
 from imageio import imwrite
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from smpl_webuser.serialization import load_model
 
 from src.config import get_config
@@ -36,11 +36,11 @@ from src.refiner import Refiner
 
 
 # Defaults:
-kVidDir = '/home/kanazawa/projects/hmr_sfv/demo_data/videos/'
+kVidDir = 'demo_data/videos/'
 # Where the smoothed results will be stored.
-kOutDir = '/home/kanazawa/projects/hmr_sfv/demo_data/results_smoothed/'
+kOutDir = 'demo_data/results_smoothed/'
 # Holds h5 for each video, which stores OP outputs, after trajectory assignment.
-kOpDir = '/home/kanazawa/projects/hmr_sfv/demo_data/openpose_output'
+kOpDir = 'demo_data/openpose_output'
 
 
 kMaxLength = 1000
@@ -122,7 +122,7 @@ def run_video(frames, per_frame_people, config, out_mov_path):
         result_dict = dd.io.load(out_res_path)
 
     # Render results into video.
-    temp_dir = tempfile.mkdtemp(dir='/mnt/ramdisk/')
+    temp_dir = tempfile.mkdtemp(dir='/tmp/')
     print('writing to %s' % temp_dir)
 
     used_frames = frames[start_fr:end_fr + 1]
@@ -147,7 +147,7 @@ def run_video(frames, per_frame_people, config, out_mov_path):
             'OpenPose Output', (10, 50),
             0,
             1,
-            np.array([0, 0, 0]),
+            (0, 0, 0),
             thickness=3)
         other_vp = np.ones_like(frame)
         other_vp2 = np.ones_like(frame)
@@ -248,7 +248,7 @@ def main(config):
     # Figure out the save name.
     pred_dir = get_pred_prefix(config.load_path)
     # import ipdb; ipdb.set_trace()
-    pred_dir = '/home/kanazawa/projects/hmr_sfv/demo_data/results_smoothed/'
+    pred_dir = './demo_data/results_smoothed/'
 
     for i, vid_path in enumerate(video_paths[:]):
         out_mov_path = join(pred_dir, basename(vid_path).replace('.mp4', '.h5'))
@@ -283,6 +283,7 @@ if __name__ == '__main__':
     # For visualization.
     renderer = SMPLRenderer(img_size=config.img_size, flength=1000.,
                             face_path=config.smpl_face_path)
+    print(config.smpl_model_path)
     smpl = load_model(config.smpl_model_path)
 
     main(config)
