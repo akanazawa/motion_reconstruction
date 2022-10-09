@@ -28,18 +28,15 @@ SMPL_MODEL_PATH = osp.join(model_dir, 'neutral_smpl_with_cocoplus_reg.pkl')
 SMPL_FACE_PATH = osp.join(curr_path, 'tf_smpl', 'smpl_faces.npy')
 
 # Default pred-trained model path for the demo.
-PRETRAINED_MODEL = osp.join(model_dir, 'hmr_rotaug_May03_1425/model.ckpt-1111959'
+PRETRAINED_MODEL = osp.join(model_dir, 'hmr_rotaug_May03_1425/model.ckpt-1111959')
 # PRETRAINED_MODEL = osp.join(model_dir, 'model.ckpt-667589')
 
-flags.DEFINE_string('smpl_model_path', SMPL_MODEL_PATH,
-                    'path to the neurtral smpl model')
-flags.DEFINE_string('smpl_face_path', SMPL_FACE_PATH,
-                    'path to smpl mesh faces (for easy rendering)')
+flags.DEFINE_string('smpl_model_path', SMPL_MODEL_PATH, 'path to the neurtral smpl model')
+flags.DEFINE_string('smpl_face_path', SMPL_FACE_PATH, 'path to smpl mesh faces (for easy rendering)')
 flags.DEFINE_string('load_path', PRETRAINED_MODEL, 'path to trained model')
 
 
-flags.DEFINE_integer('img_size', 224,
-                     'Input image size to the network after preprocessing')
+flags.DEFINE_integer('img_size', 224, 'Input image size to the network after preprocessing')
 flags.DEFINE_string('data_format', 'NHWC', 'Data format')
 flags.DEFINE_integer('num_stage', 3, '# of times to iterate regressor')
 flags.DEFINE_boolean('ief', True, 'always true.')

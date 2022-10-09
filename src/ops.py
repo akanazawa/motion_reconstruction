@@ -6,7 +6,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 
 def keypoint_l1_loss(kp_gt, kp_pred, scale=1., name=None):

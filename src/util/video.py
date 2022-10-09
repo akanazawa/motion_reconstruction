@@ -107,7 +107,7 @@ def preprocess_image(frame, bbox, op_kp, img_size, vis_thresh):
     """
     Also converts op_kp into cocoplus kp.
     """
-    from image import resize_img
+    from src.util.image import resize_img
     # bbox here is (cx, cy, scale, x, y, h, w)
     center = bbox[:2]
     scale = bbox[2]
@@ -167,8 +167,8 @@ def preprocess_image(frame, bbox, op_kp, img_size, vis_thresh):
 
 def collect_frames(frames, per_frame_people, img_size, vis_thresh):
     time_with_people = per_frame_people.keys()
-    start_frame = np.min(time_with_people)
-    end_frame = np.max(time_with_people)
+    start_frame = min(time_with_people)
+    end_frame = max(time_with_people)
 
     # Pick one person
     use_p_id = per_frame_people[start_frame][0]
